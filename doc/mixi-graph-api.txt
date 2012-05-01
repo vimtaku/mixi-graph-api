@@ -1,0 +1,87 @@
+mixi-graph-api.txt
+
+Author: vimtaku <vimtaku@gmail.com>
+Updated : 2012-05-01
+Version : 0.0.1
+
+==============================================================================
+INTRODUCTION					*mixi-graph-api-introduction*
+
+ This plugin help you use mixi graph api as example.
+
+ 1)Preparetion
+  - You should set your graph api configuration.
+   - go to https://sap.mixi.jp/home.pl and click [mixi graph api]
+   - You may be required login and do it.
+   - you create your new service.
+   - You should fill form.
+    - Redirect url is important, because we should use it later.
+    - In my case, I set like 'http://local.host/'.
+  - You should edit autoload/mixi_graph_api/config.vim.
+   - Edit consumer_key, consumer_secret, and redirect_uri.
+ 2)Try it.
+  - :MixiGraphApiDoAuthorize 'r_profile'
+   - Then, your browser will open, and you can push allow button.
+   - brwoser will be redirected to your redirect_uri.
+    - you can copy `code` parameter from redirect_url param.
+    - like this.
+    - http://local.host/?code=5b2af8ce811fd3ff7bb5d93e391fc857f4f8b9b8
+  - :MixiGraphApiGetAccessToken "5b2af8ce811fd3ff7bb5d93e391fc857f4f8b9b8"
+   - Then, you can confirm response. you find out access_token from res
+     and copy it.
+   - maybe you can find like below.
+        {'header': ['HTTP/1.1 200 OK',
+            'Date: Tue, 01 May 2012 07:20:15 GMT',
+            'Server: Apache', 'Cache-Control: no-store',
+            'X-MIXI-GRAPH-API-SPEC: 131072', 'Va'],
+         'content':
+             '{"refresh_token":"some_refresh_token",
+             "expires_in":900,
+             "access_token":"2199f67266d20a5d00dcb4fda135570957df205f",
+             "scope":"r_profile"}'}
+
+  - :MixiGraphApiGetAccessToken "2199f67266d20a5d00dcb4fda135570957df205f"
+   - your response maybe as follows.
+        {'header': ['HTTP/1.1 200 OK', 'Date: Tue, 01 May 2012 07:23:21 GMT',
+            'Server: Apache', 'Content-Length: 284',
+            'X-MIXI-GRAPH-API-SPEC: 131072', 'Vary: '],
+         'content': '{"entry":{
+                "thumbnailUrl":"http://profile.img.mixi.jp/hogehoge5.jpg",
+                "id":"some_hash_id",
+                "profileUrl":"http://mixi.jp/show_friend.pl?uid=some_hash_id",
+                "displayName":"your display name"
+            },"startIndex":0,"itemsPerPage":1,"totalResults":1}'}
+
+==============================================================================
+COMMAND						*mixi-graph-api-command*
+
+						*:MixiGraphApiDoAuthorize*
+:MixiGraphApiDoAuthorize {scope}
+ - Open mixi authorize url for requre {scope} by browser.
+
+						*:MixiGraphApiGetAccessToken*
+:MixiGraphApiGetAccessToken {authorization_code}
+ - Post request to get access token url, and view response result.
+
+						*:MixiGraphApiPostPeopleAPI*
+:MixiGraphApiPostPeopleAPI {access_token}
+ - Post request to mixi PeopleAPI endpoint by {access_token}.
+
+==============================================================================
+REQUREMENT					*mixi-graph-api-requirement*
+
+ - Internet connection
+  - This plugin requires internet connection ofcourse.
+ - webapi.vim
+  - This plugin requires webapi.vim for request.
+  - https://github.com/mattn/webapi-vim
+ - openbrowser.vim
+  - When we do authorization, we have to open it on browser. 
+
+==============================================================================
+CHANGELOG					*mixi-graph-api-changelog*
+
+2012-05-01 v0.0.1 Initial commit.
+
+==============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
